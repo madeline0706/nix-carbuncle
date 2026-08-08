@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+exec nixos-rebuild switch \
+  --flake .#carbuncle \
+  --build-host root@siren \
+  --target-host root@carbuncle \
+  "$@"

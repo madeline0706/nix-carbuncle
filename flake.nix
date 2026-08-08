@@ -11,14 +11,11 @@
 
   outputs = { nixpkgs, sops-nix, ... }:
     let
-      # Shared module list so the image and the running system can't drift.
       modules = [
         sops-nix.nixosModules.sops
         ./configuration.nix
       ];
     in {
-      # Build the flashable SD image with:
-      #   nix build .#nixosConfigurations.carbuncle-image.config.system.build.sdImage
       nixosConfigurations.carbuncle-image = nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";
         modules = modules ++ [
@@ -26,11 +23,9 @@
         ];
       };
 
-      # Deploy after first boot with:
-      #   nixos-rebuild switch --flake .#carbuncle --target-host root@carbuncle
       nixosConfigurations.carbuncle = nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";
-        inherit modules;
+        modules = modules ++ [ ./hardware.nix ];
       };
     };
 }
