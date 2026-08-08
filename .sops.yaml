@@ -1,0 +1,19 @@
+# sops config for carbuncle.
+#
+# Generate the standalone age keypair (on the Pi 5 or anywhere with age):
+#   mkdir -p ~/.config/sops/age
+#   nix run nixpkgs#age -- age-keygen -o carbuncle-age.key
+# That prints a "Public key: age1..." line. Paste it below, then copy the
+# PRIVATE key file to the device out-of-store (see NOTES):
+#   /var/lib/sops-nix/key.txt
+#
+# Encrypt/edit secrets with:  nix run nixpkgs#sops -- secrets/secrets.yaml
+
+keys:
+  - &carbuncle age1REPLACE_ME_WITH_THE_PUBLIC_KEY_FROM_age-keygen
+
+creation_rules:
+  - path_regex: secrets/[^/]+\.yaml$
+    key_groups:
+      - age:
+          - *carbuncle
