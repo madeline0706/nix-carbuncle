@@ -11,8 +11,6 @@
   services.tailscale = {
     enable = true;
     openFirewall = true;
-    authKeyFile = "${pkgs.writeText "ts-authkey"
-      "tskey-auth-k6QEyqva9411CNTRL-JMACqiFV4mGP7Sv8uXgDmGtaB6xmhA6n"}";
   };
 
   services.openssh = {
@@ -97,5 +95,5 @@
   programs.command-not-found.enable = false;
   environment.defaultPackages = lib.mkForce [ ];
 
-  environment.systemPackages = with pkgs; [ usbutils fastfetch ];
+  environment.systemPackages = with pkgs; [ usbutils ];
 }
