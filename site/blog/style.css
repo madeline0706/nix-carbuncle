@@ -48,8 +48,18 @@ main { max-width: 40rem; margin: 0 auto; padding: 0 1.4rem 5rem; }
     flex-wrap: wrap;
 }
 .site-title { font-weight: 700; font-size: 1.15rem; text-decoration: none; color: var(--fg); }
+.site-header nav { display: flex; align-items: center; }
 .site-header nav a { margin-left: 1.2rem; text-decoration: none; color: var(--muted); }
 .site-header nav a:hover { color: var(--accent); }
+.avatar {
+    width: 2.1rem;
+    height: 2.1rem;
+    margin-left: 1.4rem;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border);
+    background: var(--code-bg);
+}
 
 a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
 
@@ -87,6 +97,7 @@ img { max-width: 100%; border-radius: 8px; }
     color: var(--muted);
     font-size: 0.9rem;
     font-style: italic;
+    text-align: center;
 }
 .site-footer .sep { margin: 0 0.5rem; }
 .site-footer a { color: var(--muted); }

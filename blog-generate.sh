@@ -7,6 +7,7 @@ out="$2"
 
 mkdir -p "$out" "$out/blog"
 cp "$src/style.css" "$out/style.css"
+[ -d "$src/assets" ] && cp -r "$src/assets" "$out/assets"
 
 hdr="$src/templates/header.html"
 ftr="$src/templates/footer.html"
@@ -14,12 +15,32 @@ ftr="$src/templates/footer.html"
 cm=(cmark-gfm --unsafe -e table -e strikethrough -e autolink -e tasklist)
 
 srcbase="site/blog"
+default_desc="madeline's blog, served off a raspberry pi zero 2w running NixOS"
+
+subst() {
+    T="$1" S="$2" D="$3" awk '
+    function lrepl(str, from, to,   pos, out) {
+        out = ""
+        while ((pos = index(str, from)) > 0) {
+            out = out substr(str, 1, pos - 1) to
+            str = substr(str, pos + length(from))
+        }
+        return out str
+    }
+    {
+        line = $0
+        line = lrepl(line, "@TITLE@", ENVIRON["T"])
+        line = lrepl(line, "@SOURCE@", ENVIRON["S"])
+        line = lrepl(line, "@DESCRIPTION@", ENVIRON["D"])
+        print line
+    }' "$4"
+}
 
 emit() {
     mkdir -p "$(dirname "$4")"
-    awk -v t="$1" -v s="$3" '{ gsub(/@TITLE@/, t); gsub(/@SOURCE@/, s) } 1' "$hdr" > "$4"
+    subst "$1" "$3" "$5" "$hdr" > "$4"
     cat "$2" >> "$4"
-    awk -v t="$1" -v s="$3" '{ gsub(/@TITLE@/, t); gsub(/@SOURCE@/, s) } 1' "$ftr" >> "$4"
+    subst "$1" "$3" "$5" "$ftr" >> "$4"
 }
 
 frontmatter() {
@@ -46,14 +67,16 @@ body() {
 
 tmp=$(mktemp)
 title=$(frontmatter "$src/pages/index.md" title); title=${title:-spellbound.sh}
+desc=$(frontmatter "$src/pages/index.md" description); desc=${desc:-$default_desc}
 body "$src/pages/index.md" | "${cm[@]}" > "$tmp"
-emit "$title" "$tmp" "$srcbase/pages/index.md" "$out/index.html"
+emit "$title" "$tmp" "$srcbase/pages/index.md" "$out/index.html" "$desc"
 
 items=$(mktemp); : > "$items"
 for f in "$src"/posts/*.md; do
     slug=$(basename "$f" .md)
     title=$(frontmatter "$f" title); title=${title:-$slug}
     date=$(frontmatter "$f" date)
+    desc=$(frontmatter "$f" description); desc=${desc:-$default_desc}
 
     pc=$(mktemp)
     {
@@ -64,7 +87,7 @@ for f in "$src"/posts/*.md; do
         echo "</article>"
         echo "<p class=\"back\"><a href=\"/blog/\">← all posts</a></p>"
     } > "$pc"
-    emit "$title" "$pc" "$srcbase/posts/$slug.md" "$out/blog/$slug/index.html"
+    emit "$title" "$pc" "$srcbase/posts/$slug.md" "$out/blog/$slug/index.html" "$desc"
 
     printf '%s\t%s\t%s\n' "${date:-0000-00-00}" "$title" "$slug" >> "$items"
 done
@@ -78,4 +101,4 @@ bc=$(mktemp)
     done
     echo "</ul>"
 } > "$bc"
-emit "blog" "$bc" "$srcbase/posts" "$out/blog/index.html"
+emit "blog" "$bc" "$srcbase/posts" "$out/blog/index.html" "$default_desc"
