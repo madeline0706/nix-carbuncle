@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>spellbound:~</title>
+    <style>
+        /* F77 — a pixel-perfect bitmap-style webfont. */
+        @font-face {
+            font-family: 'F77';
+            src: url('F77.ttf') format('truetype');
+            font-display: swap;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --lavender: #cba6f7;
+            --mint: #a6e3a1;
+            --white: #cdd6f4;
+            --gray: #a6adc8;
+            --red: #f38ba8;
+            --bg: #1a1a1a;
+        }
+
+        html, body {
+            height: 100%;
+            background: var(--bg);
+            color: var(--white);
+            font-family: 'F77', monospace;
+            font-size: 12px;
+            line-height: 1.2;
+            overflow: hidden;
+        }
+
+        #app {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        #terminal {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 2em;
+            cursor: text;
+            white-space: pre-wrap;
+        }
+        #terminal::-webkit-scrollbar { width: 0; }
+
+        .input-line { display: flex; align-items: center; margin-top: 0.3em; }
+        .prompt-sign { color: var(--lavender); user-select: none; margin-right: 0.5em; white-space: nowrap; }
+        .static-cmd { color: var(--mint); }
+        .output { white-space: pre-wrap; color: var(--white); margin-top: 0.3em; }
+        .error { color: var(--red); }
+
+        #splash {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            transition: opacity 0.4s ease;
+        }
+        #splash.fade-out { opacity: 0; pointer-events: none; }
+
+        /* Colored banner with a metallic sheen sweeping across it. */
+        #banner {
+            font-family: 'F77', monospace;
+            font-size: 12px;
+            line-height: 1.1;
+            white-space: pre;
+            font-weight: bold;
+            background: linear-gradient(100deg,
+                #cba6f7 0%, #b4befe 14%, #89b4fa 28%,
+                #f5f5ff 44%, #ffffff 50%, #f5f5ff 56%,
+                #f5c2e7 72%, #cba6f7 86%, #b4befe 100%);
+            background-size: 250% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+            animation: sheen 3s ease-in-out infinite;
+        }
+        @keyframes sheen {
+            0%   { background-position: 150% 0; }
+            100% { background-position: -50% 0; }
+        }
+
+        #splash-sub {
+            margin-top: 24px;
+            color: var(--gray);
+            font-size: 12px;
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+        .command-input {
+            background: none;
+            border: none;
+            color: var(--white);
+            font-family: 'F77', monospace;
+            font-size: 12px;
+            outline: none;
+            caret-color: var(--lavender);
+            width: 100%;
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div id="splash">
+<pre id="banner">   _____            ______                          __
+  / ___/____  ___  / / / /_  ____  __  ______  ____/ /
+  \__ \/ __ \/ _ \/ / / __ \/ __ \/ / / / __ \/ __  /
+ ___/ / /_/ /  __/ / / /_/ / /_/ / /_/ / / / / /_/ /
+/____/ .___/\___/_/_/_.___/\____/\__,_/_/ /_/\__,_/
+    /_/                                               </pre>
+    <div id="splash-sub">initializing...</div>
+</div>
+
+<div id="app">
+    <div id="terminal"></div>
+</div>
+
+<script>
+class Terminal {
+    constructor(username) {
+        this.username = username;
+        this.el       = document.getElementById('terminal');
+        this.addInputLine();
+    }
+
+    getPromptString() {
+        return `${this.username}@spellbound:~#`;
+    }
+
+    addInputLine() {
+        this.el.querySelectorAll('.live-input').forEach(e => e.remove());
+        const line = document.createElement('div');
+        line.className = 'input-line live-input';
+        line.innerHTML = `<span class="prompt-sign">${this.getPromptString()}</span><input type="text" class="command-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">`;
+        this.el.appendChild(line);
+        this.input = line.querySelector('input');
+        this.input.addEventListener('keydown', e => this.onKey(e));
+        this.el.addEventListener('click', e => { if (e.target === this.el) this.input.focus(); });
+        this.input.focus();
+        this.scrollBottom();
+    }
+
+    onKey(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            this.run(this.input.value.trim());
+        }
+    }
+
+    run(cmd) {
+        const live = this.el.querySelector('.live-input');
+        if (live) {
+            live.classList.remove('live-input');
+            const inp = live.querySelector('input');
+            const span = document.createElement('span');
+            span.className = 'static-cmd';
+            span.textContent = ' ' + cmd;
+            inp.replaceWith(span);
+        }
+
+        if (!cmd) { this.addInputLine(); return; }
+
+        this.print(`-bash: ${cmd}: command not found`, true);
+        this.addInputLine();
+    }
+
+    print(text, isError = false) {
+        const d = document.createElement('div');
+        d.className = 'output' + (isError ? ' error' : '');
+        d.textContent = text;
+        this.el.appendChild(d);
+        this.scrollBottom();
+    }
+
+    scrollBottom() { this.el.scrollTop = this.el.scrollHeight; }
+}
+
+async function boot() {
+    const splash = document.getElementById('splash');
+    // Let the metallic sheen sweep across before dropping into the terminal.
+    await new Promise(r => setTimeout(r, 1800));
+    splash.classList.add('fade-out');
+    await new Promise(r => setTimeout(r, 400));
+    splash.style.display = 'none';
+    new Terminal('guest');
+}
+
+window.addEventListener('DOMContentLoaded', boot);
+</script>
+</body>
+</html>

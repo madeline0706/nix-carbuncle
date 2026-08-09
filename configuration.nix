@@ -96,13 +96,7 @@
     enable = true;
     virtualHosts.carbuncle = {
       default = true;
-      locations."/".root = pkgs.writeTextDir "index.html" ''
-        <!doctype html>
-        <html>
-          <head><title>carbuncle</title></head>
-          <body><h1>hello from carbuncle</h1></body>
-        </html>
-      '';
+      locations."/".root = ./site;
     };
   };
 
