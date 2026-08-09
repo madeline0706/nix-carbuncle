@@ -1,5 +1,5 @@
 keys:
-  - &carbuncle age1REPLACE_ME_WITH_THE_PUBLIC_KEY_FROM_age-keygen
+  - &carbuncle age1xka3rjgpguvdly6t4kdyrapsrl0ktkvylxvy98fzf3awwwzyla7s6948r0
 
 creation_rules:
   - path_regex: secrets/[^/]+\.yaml$

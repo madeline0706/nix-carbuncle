@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 {
   system.stateVersion = "26.05";
 
@@ -11,8 +11,7 @@
   services.tailscale = {
     enable = true;
     openFirewall = true;
-    authKeyFile = "${pkgs.writeText "ts-authkey"
-      "tskey-auth-kv6Z6dj14J11CNTRL-UYbu5fTEkx7XPmrZe9Ebx7cmcyrd9vZC"}";
+    authKeyFile = config.sops.secrets."tailscale/authkey".path;
   };
 
   services.openssh = {
@@ -37,6 +36,8 @@
 
   security.sudo.wheelNeedsPassword = false;
 
+  sops.defaultSopsFile = ./secrets/secrets.yaml;
+  sops.secrets."tailscale/authkey" = { };
   sops.age = {
     keyFile = "/var/lib/sops-nix/key.txt";
     generateKey = false;
