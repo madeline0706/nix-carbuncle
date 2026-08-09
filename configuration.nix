@@ -1,5 +1,7 @@
 { config, lib, pkgs, ... }:
 {
+  imports = [ ./site.nix ];
+
   system.stateVersion = "26.05";
 
   networking = {
@@ -92,13 +94,7 @@
   programs.command-not-found.enable = false;
   environment.defaultPackages = lib.mkForce [ ];
 
-  services.nginx = {
-    enable = true;
-    virtualHosts.carbuncle = {
-      default = true;
-      locations."/".root = ./site;
-    };
-  };
+  services.spellboundSite.enable = true;
 
   environment.systemPackages = with pkgs; [ usbutils ];
 }
