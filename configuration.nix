@@ -76,12 +76,6 @@
     optimise.automatic = true;
   };
 
-  boot.kernelModules = [ "bcm2835_wdt" ];
-  systemd.settings.Manager = {
-    RuntimeWatchdogSec = "20s";
-    RebootWatchdogSec = "30s";
-  };
-
   boot.loader.grub.enable = false;
   boot.loader.generic-extlinux-compatible = {
     enable = true;
