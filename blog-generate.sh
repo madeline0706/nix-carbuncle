@@ -65,11 +65,20 @@ body() {
         !fm { print }' "$1"
 }
 
-tmp=$(mktemp)
-title=$(frontmatter "$src/pages/index.md" title); title=${title:-spellbound.sh}
-desc=$(frontmatter "$src/pages/index.md" description); desc=${desc:-$default_desc}
-body "$src/pages/index.md" | "${cm[@]}" > "$tmp"
-emit "$title" "$tmp" "$srcbase/pages/index.md" "$out/index.html" "$desc"
+for f in "$src"/pages/*.md; do
+    slug=$(basename "$f" .md)
+    title=$(frontmatter "$f" title); title=${title:-$slug}
+    desc=$(frontmatter "$f" description); desc=${desc:-$default_desc}
+
+    pc=$(mktemp)
+    body "$f" | "${cm[@]}" > "$pc"
+
+    if [ "$slug" = "index" ]; then
+        emit "$title" "$pc" "$srcbase/pages/index.md" "$out/index.html" "$desc"
+    else
+        emit "$title" "$pc" "$srcbase/pages/$slug.md" "$out/$slug/index.html" "$desc"
+    fi
+done
 
 items=$(mktemp); : > "$items"
 for f in "$src"/posts/*.md; do

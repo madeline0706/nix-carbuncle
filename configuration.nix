@@ -96,5 +96,5 @@
 
   services.spellboundSite.enable = true;
 
-  environment.systemPackages = with pkgs; [ usbutils ];
+  environment.systemPackages = with pkgs; [ usbutils fastfetch ];
 }

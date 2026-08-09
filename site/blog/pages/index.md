@@ -12,7 +12,10 @@ what should you expect from this blog?
 - nonsensical rambling
 - pictures of my legos
 - tech related stuff
-- nixos, linux (did i forget to mention nixos)
+- nixos, linux (did i forget to mention nixos?)
+- music related stuff
+- highly opinionated and ignorant homelab configurations
+
 
 be cringe be free
 
