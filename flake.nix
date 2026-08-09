@@ -17,7 +17,9 @@
         ./configuration.nix
       ];
     in {
-      # flashable SD image for the first install (no real hardware.nix yet)
+      # flashable SD image for the first install; sd-image module brings its own
+      # fs/boot layout (root by-label NIXOS_SD), so it doesn't use hardware.nix
+
       nixosConfigurations.carbuncle-image = nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";           # siren is aarch64, so build/cross-build for it
         modules = modules ++ [

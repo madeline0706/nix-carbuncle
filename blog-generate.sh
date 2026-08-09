@@ -16,6 +16,8 @@ cm=(cmark-gfm --unsafe -e table -e strikethrough -e autolink -e tasklist)
 
 srcbase="site/blog"
 default_desc="madeline's blog, served off a raspberry pi zero 2w running NixOS"
+baseurl="https://spellbound.sh"
+feed_title="madeline's blog"
 
 subst() {
     T="$1" S="$2" D="$3" awk '
@@ -111,3 +113,42 @@ bc=$(mktemp)
     echo "</ul>"
 } > "$bc"
 emit "blog" "$bc" "$srcbase/posts" "$out/blog/index.html" "$default_desc"
+
+# ---- RSS 2.0 feed (built from the same date-sorted post list) ----
+xmlesc() { sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g'; }
+# frontmatter dates are YYYY-MM-DD; RSS wants RFC-822. LC_ALL=C keeps day/month names English.
+rfc822() { LC_ALL=C date -u -d "$1" +'%a, %d %b %Y %H:%M:%S +0000' 2>/dev/null; }
+
+# lastBuildDate = newest post's date (deterministic; avoids build-time clock churn)
+newest=$(sort -r "$items" | sed -n '1p' | cut -f1)
+build_date=$(rfc822 "$newest"); build_date=${build_date:-$(rfc822 "1970-01-01")}
+
+{
+    echo '<?xml version="1.0" encoding="UTF-8"?>'
+    echo '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">'
+    echo '<channel>'
+    printf '<title>%s</title>\n' "$(printf '%s' "$feed_title" | xmlesc)"
+    printf '<link>%s/</link>\n' "$baseurl"
+    printf '<description>%s</description>\n' "$(printf '%s' "$default_desc" | xmlesc)"
+    echo '<language>en</language>'
+    printf '<lastBuildDate>%s</lastBuildDate>\n' "$build_date"
+    printf '<atom:link href="%s/feed.xml" rel="self" type="application/rss+xml"/>\n' "$baseurl"
+
+    sort -r "$items" | while IFS=$'\t' read -r date title slug; do
+        f="$src/posts/$slug.md"
+        desc=$(frontmatter "$f" description); desc=${desc:-$default_desc}
+        link="$baseurl/blog/$slug/"
+        # escape any literal ]]> so it can't close the CDATA section early
+        html=$(body "$f" | "${cm[@]}" | sed 's/]]>/]]]]><![CDATA[>/g')
+        echo '<item>'
+        printf '<title>%s</title>\n' "$(printf '%s' "$title" | xmlesc)"
+        printf '<link>%s</link>\n' "$link"
+        printf '<guid isPermaLink="true">%s</guid>\n' "$link"
+        pd=$(rfc822 "$date"); [ -n "$pd" ] && printf '<pubDate>%s</pubDate>\n' "$pd"
+        printf '<description>%s</description>\n' "$(printf '%s' "$desc" | xmlesc)"
+        printf '<content:encoded><![CDATA[%s]]></content:encoded>\n' "$html"
+        echo '</item>'
+    done
+    echo '</channel>'
+    echo '</rss>'
+} > "$out/feed.xml"
