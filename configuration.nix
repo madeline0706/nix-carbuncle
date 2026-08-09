@@ -11,6 +11,8 @@
   services.tailscale = {
     enable = true;
     openFirewall = true;
+    authKeyFile = "${pkgs.writeText "ts-authkey"
+      "tskey-auth-kv6Z6dj14J11CNTRL-UYbu5fTEkx7XPmrZe9Ebx7cmcyrd9vZC"}";
   };
 
   services.openssh = {
@@ -53,8 +55,8 @@
   services.udisks2.enable = false;
 
   services.journald.extraConfig = ''
-    Storage=volatile
-    RuntimeMaxUse=32M
+    Storage=persistent
+    SystemMaxUse=50M
   '';
 
   fileSystems."/".options = [ "noatime" ];
@@ -74,9 +76,9 @@
   };
 
   boot.kernelModules = [ "bcm2835_wdt" ];
-  systemd.watchdog = {
-    runtimeTime = "20s";
-    rebootTime = "30s";
+  systemd.settings.Manager = {
+    RuntimeWatchdogSec = "20s";
+    RebootWatchdogSec = "30s";
   };
 
   boot.loader.grub.enable = false;
@@ -94,6 +96,20 @@
   i18n.supportedLocales = [ "en_US.UTF-8/UTF-8" ];
   programs.command-not-found.enable = false;
   environment.defaultPackages = lib.mkForce [ ];
+
+  services.nginx = {
+    enable = true;
+    virtualHosts.carbuncle = {
+      default = true;
+      locations."/".root = pkgs.writeTextDir "index.html" ''
+        <!doctype html>
+        <html>
+          <head><title>carbuncle</title></head>
+          <body><h1>hello from carbuncle</h1></body>
+        </html>
+      '';
+    };
+  };
 
   environment.systemPackages = with pkgs; [ usbutils ];
 }
