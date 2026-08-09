@@ -1,7 +1,3 @@
-// The terminal: prompt, input loop, and command dispatch. Commands themselves
-// live in ./commands/ and are looked up through the registry — the terminal has
-// no built-in commands of its own.
-
 import { getCommand } from './commands/registry.js';
 
 export class Terminal {

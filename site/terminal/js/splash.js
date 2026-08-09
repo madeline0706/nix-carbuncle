@@ -1,6 +1,3 @@
-// Splash screen: renders the banner (loaded from content/) and sweeps a
-// metallic sheen across it, then fades out into the terminal.
-
 import { wait, loadText } from './util.js';
 
 export class Splash {

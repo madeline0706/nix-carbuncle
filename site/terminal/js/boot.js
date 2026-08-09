@@ -1,10 +1,8 @@
-// Entry point: load config, register commands, run the splash, hand off to the
-// terminal. Wired together from small modules so each piece stays swappable.
-
-import { loadJson } from './util.js';
+import { loadJson, loadText } from './util.js';
 import { Splash } from './splash.js';
 import { Terminal } from './terminal.js';
-import './commands/index.js'; // registers whatever commands are enabled
+import { Dungeon } from './dungeon.js';
+import './commands/index.js';
 
 const DEFAULTS = {
     username: 'guest',
@@ -20,6 +18,9 @@ async function main() {
     await splash.hide();
 
     new Terminal(config);
+
+    const room = await loadText('content/room.txt');
+    if (room) new Dungeon('dungeon', room);
 }
 
 window.addEventListener('DOMContentLoaded', () => {

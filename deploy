@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+# I am lazy. This deploys the code locally to Carbuncle, and builds it via Siren.
+
 set -euo pipefail
 exec nixos-rebuild switch \
   --flake .#carbuncle \
