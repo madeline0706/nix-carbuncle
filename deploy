@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# I am lazy. This deploys the code locally to Carbuncle, and builds it via Siren.
+# i am a lazy fuck! this deploys the code locally from my desktop/laptop to carbuncle, and builds it via siren, a pi 5 (both ARM)
 
 set -euo pipefail
 exec nixos-rebuild switch \
