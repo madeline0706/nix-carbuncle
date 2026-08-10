@@ -32,6 +32,7 @@
 
   users.users.root.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOARmU1gT1eVnYO4yA9TRBbY6DRirqQXjWKnpa+5eMbv madeline@bulbasaur-nix"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII2OMMWXTrcZ2Dl+N0GjstqnFQlspF0ofQ2SZkfKwJX+ madeline@arcanine-nix"
   ];
 
   # holy shit who's that?
@@ -41,6 +42,7 @@
     extraGroups = [ "wheel" ];
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOARmU1gT1eVnYO4yA9TRBbY6DRirqQXjWKnpa+5eMbv madeline@bulbasaur-nix"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII2OMMWXTrcZ2Dl+N0GjstqnFQlspF0ofQ2SZkfKwJX+ madeline@arcanine-nix"
     ];
   };
 
