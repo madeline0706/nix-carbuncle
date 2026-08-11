@@ -134,6 +134,36 @@ main { max-width: 40rem; margin: 0 auto; padding: 0 1.4rem 5rem; }
 .leaf:hover .lbl { opacity: 1; }
 .leaf[aria-current="true"] .dot { outline: 2px solid var(--accent); outline-offset: 2px; }
 
+/* mobile: no room to fan radially — splay the orbs in a straight row below the nav */
+@media (max-width: 52rem) {
+    .site-header { position: relative; z-index: 10; }
+    .fanroot { position: static; }
+    .branch {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        width: auto;
+        height: auto;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.7rem;
+        padding: 0.7rem 1.4rem;
+        background: var(--bg);
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+        z-index: 40;
+    }
+    .branch.open { opacity: 1; pointer-events: auto; }
+    .branch > .node { position: static; transform: scale(var(--s, 0.4)); }
+    .leaf .dot { width: 1.4rem; height: 1.4rem; }
+    .leaf .lbl { display: none; }
+}
+
 a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
 
 h1, h2, h3 { line-height: 1.3; font-weight: 700; margin-top: 2rem; }
