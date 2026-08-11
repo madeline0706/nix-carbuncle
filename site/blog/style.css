@@ -78,7 +78,8 @@ main { max-width: 40rem; margin: 0 auto; padding: 0 1.4rem 5rem; }
     content: attr(data-tip);
     position: absolute;
     top: calc(100% + 0.45rem);
-    right: 0;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 60;
     white-space: nowrap;
     padding: 0.15rem 0.55rem;
