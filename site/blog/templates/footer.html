@@ -2,7 +2,7 @@
 <footer class="site-footer">
 <span><a href="https://github.com/madeline0706/nix-carbuncle/blob/main/@SOURCE@">view page source</a></span>
 <span class="sep" aria-hidden="true">·</span>
-<span>Madelineopolis Enterprizes LLSEE</span>
+<span>madelineopolis enterprizes llsee</span>
 <span class="load-time" hidden><span class="sep" aria-hidden="true">·</span><span class="load-time-value"></span></span>
 </footer>
 <script>
@@ -10,9 +10,9 @@
     var doc = document.documentElement;
 
     // theme switcher: persist choice in localStorage, mark the active one
-    var toggle = document.querySelector('.settings-toggle');
-    var panel = document.querySelector('.settings-panel');
-    var wrap = document.querySelector('.settings');
+    var toggle = document.querySelector('.menu-toggle');
+    var panel = document.querySelector('.menu-panel');
+    var wrap = document.querySelector('.menu');
     if (toggle && panel && wrap) {
         var mark = function () {
             var cur = doc.getAttribute('data-theme') || 'spellbound';
@@ -32,6 +32,7 @@
             doc.setAttribute('data-theme', name);
             try { localStorage.setItem('theme', name); } catch (e) {}
             mark();
+            open(false);
         });
         document.addEventListener('click', function (e) { if (!wrap.contains(e.target)) open(false); });
         document.addEventListener('keydown', function (e) { if (e.key === 'Escape') open(false); });
