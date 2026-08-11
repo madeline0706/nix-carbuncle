@@ -24,18 +24,21 @@
 <a href="/">home</a>
 <a href="/blog/">blog</a>
 <a href="/contact/">contact</a>
-<div class="settings">
-<button class="settings-toggle" type="button" aria-label="Settings" aria-haspopup="true" aria-expanded="false">
-<svg viewBox="0 0 4 16" aria-hidden="true"><circle cx="2" cy="2.4" r="1.7"/><circle cx="2" cy="8" r="1.7"/><circle cx="2" cy="13.6" r="1.7"/></svg>
-</button>
-<div class="settings-panel" hidden>
-<p class="settings-heading">theme</p>
-<ul class="theme-list">
-@THEME_OPTIONS@
-</ul>
-</div>
-</div>
 <img class="avatar" src="/assets/profile.png" alt="madeline">
+<div class="menu">
+<button class="menu-toggle" type="button" aria-label="Menu" aria-haspopup="true" aria-expanded="false">
+<svg viewBox="0 0 4 16" aria-hidden="true"><circle cx="2" cy="2.2" r="1.6"/><circle cx="2" cy="8" r="1.6"/><circle cx="2" cy="13.8" r="1.6"/></svg>
+</button>
+<div class="menu-panel" hidden>
+<p class="menu-heading">menu</p>
+<div class="menu-item">
+<button class="menu-sub-toggle" type="button" aria-haspopup="true">themes</button>
+<div class="submenu">
+@THEME_OPTIONS@
+</div>
+</div>
+</div>
+</div>
 </nav>
 </header>
 <main>
