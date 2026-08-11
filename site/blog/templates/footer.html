@@ -9,33 +9,66 @@
 (function () {
     var doc = document.documentElement;
 
-    // theme switcher: persist choice in localStorage, mark the active one
-    var toggle = document.querySelector('.menu-toggle');
-    var panel = document.querySelector('.menu-panel');
-    var wrap = document.querySelector('.menu');
-    if (toggle && panel && wrap) {
+    // radial spell-fan: each branch fans its nodes out along an arc set by its
+    // data-angle/spread/radius; picking a theme persists it and marks it active
+    var fanroot = document.querySelector('.fanroot');
+    if (fanroot) {
+        var kebab = fanroot.querySelector('.kebab');
+        var topBranch = fanroot.querySelector(':scope > .branch');
+
         var mark = function () {
             var cur = doc.getAttribute('data-theme') || 'spellbound';
-            panel.querySelectorAll('[data-theme-set]').forEach(function (b) {
-                b.setAttribute('aria-pressed', b.getAttribute('data-theme-set') === cur ? 'true' : 'false');
+            fanroot.querySelectorAll('[data-theme-set]').forEach(function (b) {
+                b.setAttribute('aria-current', b.getAttribute('data-theme-set') === cur ? 'true' : 'false');
             });
         };
-        var open = function (v) {
-            panel.hidden = !v;
-            toggle.setAttribute('aria-expanded', v ? 'true' : 'false');
+        var place = function (branch) {
+            var nodes = Array.prototype.slice.call(branch.children);
+            var n = nodes.length;
+            var base = parseFloat(branch.dataset.angle) || 0;
+            var spread = parseFloat(branch.dataset.spread) || 0;
+            var R = parseFloat(branch.dataset.radius) || 78;
+            nodes.forEach(function (li, i) {
+                var a = (n <= 1) ? base : base - spread / 2 + spread * i / (n - 1);
+                var r = a * Math.PI / 180;
+                li.style.setProperty('--x', (Math.cos(r) * R).toFixed(1) + 'px');
+                li.style.setProperty('--y', (Math.sin(r) * R).toFixed(1) + 'px');
+                li.style.setProperty('--d', (i * 0.035).toFixed(3) + 's');
+            });
         };
-        toggle.addEventListener('click', function (e) { e.stopPropagation(); open(panel.hidden); });
-        panel.addEventListener('click', function (e) {
-            var b = e.target.closest('[data-theme-set]');
-            if (!b) return;
-            var name = b.getAttribute('data-theme-set');
-            doc.setAttribute('data-theme', name);
-            try { localStorage.setItem('theme', name); } catch (e) {}
-            mark();
-            open(false);
+        var openBranch = function (b) { b.classList.add('open'); place(b); };
+        var closeBranch = function (b) {
+            b.classList.remove('open');
+            Array.prototype.slice.call(b.children).forEach(function (li) {
+                li.style.setProperty('--x', '0px'); li.style.setProperty('--y', '0px'); li.style.setProperty('--d', '0s');
+                var sub = li.querySelector('.branch'); if (sub) closeBranch(sub);
+            });
+        };
+        var toggleBranch = function (b) { b.classList.contains('open') ? closeBranch(b) : openBranch(b); };
+        var setExpanded = function () { kebab.setAttribute('aria-expanded', topBranch.classList.contains('open') ? 'true' : 'false'); };
+
+        kebab.addEventListener('click', function (e) { e.stopPropagation(); toggleBranch(topBranch); setExpanded(); });
+        fanroot.addEventListener('click', function (e) {
+            var br = e.target.closest('[data-branch]');
+            if (br) {
+                e.stopPropagation();
+                var sub = br.parentElement.querySelector(':scope > .branch');
+                if (sub) toggleBranch(sub);
+                return;
+            }
+            var leaf = e.target.closest('[data-theme-set]');
+            if (leaf) {
+                e.stopPropagation();
+                var name = leaf.getAttribute('data-theme-set');
+                doc.setAttribute('data-theme', name);
+                try { localStorage.setItem('theme', name); } catch (e) {}
+                mark();
+                closeBranch(topBranch);
+                setExpanded();
+            }
         });
-        document.addEventListener('click', function (e) { if (!wrap.contains(e.target)) open(false); });
-        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') open(false); });
+        document.addEventListener('click', function () { closeBranch(topBranch); setExpanded(); });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeBranch(topBranch); setExpanded(); } });
         mark();
     }
 

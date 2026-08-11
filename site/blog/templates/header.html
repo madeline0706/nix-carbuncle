@@ -25,20 +25,19 @@
 <a href="/blog/">blog</a>
 <a href="/contact/">contact</a>
 <img class="avatar" src="/assets/profile.png" alt="madeline">
-<div class="menu">
-<button class="menu-toggle" type="button" aria-label="Menu" aria-haspopup="true" aria-expanded="false">
+<span class="fanroot">
+<button class="kebab" type="button" aria-label="Menu" aria-haspopup="true" aria-expanded="false">
 <svg viewBox="0 0 4 16" aria-hidden="true"><circle cx="2" cy="2.2" r="1.6"/><circle cx="2" cy="8" r="1.6"/><circle cx="2" cy="13.8" r="1.6"/></svg>
 </button>
-<div class="menu-panel" hidden>
-<p class="menu-heading">menu</p>
-<div class="menu-item">
-<button class="menu-sub-toggle" type="button" aria-haspopup="true">themes</button>
-<div class="submenu">
+<ul class="branch" data-angle="0" data-spread="0" data-radius="78">
+<li class="node">
+<button class="item" type="button" data-branch>themes</button>
+<ul class="branch" data-angle="118" data-spread="150" data-radius="134">
 @THEME_OPTIONS@
-</div>
-</div>
-</div>
-</div>
+</ul>
+</li>
+</ul>
+</span>
 </nav>
 </header>
 <main>

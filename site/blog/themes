@@ -2,6 +2,8 @@
 # columns: name | kind | bg | fg | muted | accent | border | code-bg
 # first row is the default served before a visitor picks one; kind is informational.
 spellbound | dark  | #1a1a1a | #d8d4cc | #8a857b | #cba6f7 | #2f2f2c | #232320
+witchlight | dark  | #0e1512 | #cfe0d5 | #6d8377 | #45d98a | #1c2a22 | #14201b
+infernus   | dark  | #17120f | #ecd9c8 | #9c7f6b | #f0562a | #2d1f17 | #1f1712
 grimoire   | light | #f4ead2 | #2f2822 | #7c6f57 | #9d2449 | #e0d2af | #eaddbd
 moonstone  | light | #f7f8fa | #1e2732 | #647184 | #0f7d72 | #e3e7ee | #eef1f6
-witchlight | dark  | #0e1512 | #cfe0d5 | #6d8377 | #45d98a | #1c2a22 | #14201b
+aegis      | light | #fbfaf5 | #2b2a25 | #8c8676 | #c0982f | #ece6d6 | #f3efe1

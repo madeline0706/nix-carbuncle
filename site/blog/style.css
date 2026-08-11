@@ -17,7 +17,7 @@
 
 * { box-sizing: border-box; }
 
-/* mono stack shared by code blocks and the menu */
+/* mono stack for code blocks */
 :root { --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 
 html { font-size: 19px; }
@@ -57,8 +57,9 @@ main { max-width: 40rem; margin: 0 auto; padding: 0 1.4rem 5rem; }
     background: var(--code-bg);
 }
 
-.menu { position: relative; display: inline-flex; align-items: center; margin-left: 1.4rem; }
-.menu-toggle {
+/* ---- radial spell-fan menu (nested; works at any depth) ---- */
+.fanroot { position: relative; display: inline-flex; margin-left: 1.4rem; z-index: 50; }
+.kebab {
     display: inline-flex;
     padding: 0.3rem 0.4rem;
     background: none;
@@ -68,63 +69,70 @@ main { max-width: 40rem; margin: 0 auto; padding: 0 1.4rem 5rem; }
     color: var(--muted);
     line-height: 0;
 }
-.menu-toggle:hover { color: var(--accent); }
-.menu-toggle svg { width: 4px; height: 16px; display: block; fill: currentColor; }
+.kebab:hover { color: var(--accent); }
+.kebab svg { width: 4px; height: 16px; display: block; fill: currentColor; }
 
-/* dropdown panels: shared look for the menu and its themes flyout */
-.menu-panel, .submenu {
+/* a branch is a zero-size anchor at its parent; its nodes fan out via JS-set --x/--y */
+.branch { position: absolute; top: 50%; left: 50%; width: 0; height: 0; list-style: none; margin: 0; padding: 0; }
+.branch > .node {
     position: absolute;
-    z-index: 20;
-    font-family: var(--mono);
-    min-width: 9rem;
-    padding: 0.4rem;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.28);
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%) translate(var(--x, 0px), var(--y, 0px)) scale(var(--s, 0.3));
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.34s cubic-bezier(0.2, 0.9, 0.3, 1.35), opacity 0.22s;
+    transition-delay: var(--d, 0s);
 }
-.menu-panel { top: -0.4rem; left: calc(100% + 0.4rem); }
+.branch.open > .node { opacity: 1; pointer-events: auto; --s: 1; }
 
-.menu-heading, .menu-group {
-    margin: 0.15rem 0.5rem 0.3rem;
-    font-size: 0.68rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    font-style: normal;
-    color: var(--muted);
-}
-.menu-group { margin-top: 0.4rem; }
-.submenu .menu-group:first-child { margin-top: 0.15rem; }
-
-.menu-item { position: relative; }
-
-/* buttons in the menu and flyout share styling */
-.menu-sub-toggle, .submenu button {
+.item {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
-    width: 100%;
-    padding: 0.4rem 0.5rem;
-    background: none;
-    border: none;
-    border-radius: 6px;
+    gap: 0.5rem;
+    white-space: nowrap;
+    padding: 0.38rem 0.8rem;
+    border-radius: 999px;
     cursor: pointer;
+    background: var(--bg);
+    border: 1px solid var(--border);
     color: var(--fg);
     font: inherit;
-    font-size: 0.9rem;
-    text-align: left;
+    font-size: 0.85rem;
+    box-shadow: 0 5px 16px rgba(0, 0, 0, 0.28);
 }
-.menu-sub-toggle::after { content: "\203A"; margin-left: auto; color: var(--muted); }
-.menu-sub-toggle:hover, .submenu button:hover { background: var(--code-bg); color: var(--accent); }
-.submenu button[aria-pressed="true"] { color: var(--accent); }
-.submenu button[aria-pressed="true"]::after { content: "\2713"; margin-left: auto; }
+.item:hover { border-color: var(--accent); color: var(--accent); }
 
-/* themes flyout: opens to the left of the menu on hover/focus */
-.submenu { top: -0.4rem; left: 100%; display: none; }
-.menu-item:hover .submenu,
-.menu-item:focus-within .submenu { display: block; }
-.menu-item:hover .menu-sub-toggle,
-.menu-item:focus-within .menu-sub-toggle { background: var(--code-bg); color: var(--accent); }
+/* leaf = a colour orb; its name shows on hover so orbs never crowd each other */
+.leaf { position: relative; padding: 0.22rem; }
+.leaf .dot {
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    flex: none;
+    background: var(--sw);
+    box-shadow: inset 0 0 0 4px var(--swa);
+    border: 1px solid rgba(0, 0, 0, 0.25);
+}
+.leaf .lbl {
+    position: absolute;
+    left: calc(100% + 0.45rem);
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0.15rem 0.55rem;
+    border-radius: 6px;
+    white-space: nowrap;
+    font-size: 0.8rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--fg);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+    z-index: 3;
+}
+.leaf:hover .lbl { opacity: 1; }
+.leaf[aria-current="true"] .dot { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
 

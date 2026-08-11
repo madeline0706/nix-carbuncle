@@ -89,21 +89,17 @@ themes="$src/themes"
     ' "$themes"
 } >> "$out/style.css"
 
-# render the themes flyout, grouped by kind (dark first, then light); the kind
-# column decides the group, so a new row lands in the right place automatically
-theme_buttons() {  # $1 = kind to emit
+# render the spell-fan leaves, dark orbs first then light; each orb carries its
+# palette colours (bg + accent) and reveals "name · kind" on hover
+theme_leaves() {  # $1 = kind to emit
     awk -F'|' -v want="$1" '
         /^[[:space:]]*#/ || /^[[:space:]]*$/ { next }
         { for (i = 1; i <= NF; i++) gsub(/^[[:space:]]+|[[:space:]]+$/, "", $i)
           if ($2 != want) next
-          printf "<button type=\"button\" data-theme-set=\"%s\">%s</button>\n", $1, $1 }
+          printf "<li class=\"node\"><button class=\"item leaf\" type=\"button\" data-theme-set=\"%s\"><span class=\"dot\" style=\"--sw:%s;--swa:%s\"></span><span class=\"lbl\">%s \302\267 %s</span></button></li>\n", $1, $3, $6, $1, $2 }
     ' "$themes"
 }
-darks=$(theme_buttons dark)
-lights=$(theme_buttons light)
-theme_options=""
-[ -n "$darks" ]  && theme_options+="<p class=\"menu-group\">dark</p>"$'\n'"$darks"$'\n'
-[ -n "$lights" ] && theme_options+="<p class=\"menu-group\">light</p>"$'\n'"$lights"
+theme_options="$(theme_leaves dark)"$'\n'"$(theme_leaves light)"
 
 hdr=$(mktemp)
 OPTS="$theme_options" awk '
