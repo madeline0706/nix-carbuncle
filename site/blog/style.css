@@ -60,6 +60,7 @@ main { max-width: 40rem; margin: 0 auto; padding: 0 1.4rem 5rem; }
 /* ---- radial spell-fan menu (nested; works at any depth) ---- */
 .fanroot { position: relative; display: inline-flex; margin-left: 1.4rem; z-index: 50; }
 .kebab {
+    position: relative;
     display: inline-flex;
     padding: 0.3rem 0.4rem;
     background: none;
@@ -71,6 +72,29 @@ main { max-width: 40rem; margin: 0 auto; padding: 0 1.4rem 5rem; }
 }
 .kebab:hover { color: var(--accent); }
 .kebab svg { width: 4px; height: 16px; display: block; fill: currentColor; }
+
+/* hover/focus tooltip on the three dots */
+.kebab::after {
+    content: attr(data-tip);
+    position: absolute;
+    top: calc(100% + 0.45rem);
+    right: 0;
+    z-index: 60;
+    white-space: nowrap;
+    padding: 0.15rem 0.55rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--fg);
+    box-shadow: 0 5px 16px rgba(0, 0, 0, 0.28);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+}
+.kebab:hover::after,
+.kebab:focus-visible::after { opacity: 1; }
 
 /* a branch is a zero-size anchor at its parent; its nodes fan out via JS-set --x/--y */
 .branch { position: absolute; top: 50%; left: 50%; width: 0; height: 0; list-style: none; margin: 0; padding: 0; }
