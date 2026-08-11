@@ -19,6 +19,9 @@ default_desc="madeline's blog, served off a raspberry pi zero 2w running NixOS"
 baseurl="https://spellbound.sh"
 feed_title="madeline's blog"
 
+# escape title/desc for element text or a double-quoted attribute; RSS keeps raw values for xmlesc
+htmlesc() { sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g' -e 's/"/\&quot;/g'; }
+
 subst() {
     T="$1" S="$2" D="$3" awk '
     function lrepl(str, from, to,   pos, out) {
@@ -71,14 +74,16 @@ for f in "$src"/pages/*.md; do
     slug=$(basename "$f" .md)
     title=$(frontmatter "$f" title); title=${title:-$slug}
     desc=$(frontmatter "$f" description); desc=${desc:-$default_desc}
+    etitle=$(printf '%s' "$title" | htmlesc)
+    edesc=$(printf '%s' "$desc" | htmlesc)
 
     pc=$(mktemp)
     body "$f" | "${cm[@]}" > "$pc"
 
     if [ "$slug" = "index" ]; then
-        emit "$title" "$pc" "$srcbase/pages/index.md" "$out/index.html" "$desc"
+        emit "$etitle" "$pc" "$srcbase/pages/index.md" "$out/index.html" "$edesc"
     else
-        emit "$title" "$pc" "$srcbase/pages/$slug.md" "$out/$slug/index.html" "$desc"
+        emit "$etitle" "$pc" "$srcbase/pages/$slug.md" "$out/$slug/index.html" "$edesc"
     fi
 done
 
@@ -88,17 +93,19 @@ for f in "$src"/posts/*.md; do
     title=$(frontmatter "$f" title); title=${title:-$slug}
     date=$(frontmatter "$f" date)
     desc=$(frontmatter "$f" description); desc=${desc:-$default_desc}
+    etitle=$(printf '%s' "$title" | htmlesc)
+    edesc=$(printf '%s' "$desc" | htmlesc)
 
     pc=$(mktemp)
     {
         echo "<article class=\"post\">"
-        echo "<h1>$title</h1>"
+        echo "<h1>$etitle</h1>"
         [ -n "$date" ] && echo "<p class=\"post-date\">$date</p>"
         body "$f" | "${cm[@]}"
         echo "</article>"
         echo "<p class=\"back\"><a href=\"/blog/\">← all posts</a></p>"
     } > "$pc"
-    emit "$title" "$pc" "$srcbase/posts/$slug.md" "$out/blog/$slug/index.html" "$desc"
+    emit "$etitle" "$pc" "$srcbase/posts/$slug.md" "$out/blog/$slug/index.html" "$edesc"
 
     printf '%s\t%s\t%s\n' "${date:-0000-00-00}" "$title" "$slug" >> "$items"
 done
@@ -108,7 +115,7 @@ bc=$(mktemp)
     echo "<h1>blog</h1>"
     echo "<ul class=\"post-list\">"
     sort -r "$items" | while IFS=$'\t' read -r date title slug; do
-        echo "<li><time>$date</time><a href=\"/blog/$slug/\">$title</a></li>"
+        echo "<li><time>$date</time><a href=\"/blog/$slug/\">$(printf '%s' "$title" | htmlesc)</a></li>"
     done
     echo "</ul>"
 } > "$bc"
