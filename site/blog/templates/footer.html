@@ -49,13 +49,6 @@
 
         kebab.addEventListener('click', function (e) { e.stopPropagation(); toggleBranch(topBranch); setExpanded(); });
         fanroot.addEventListener('click', function (e) {
-            var br = e.target.closest('[data-branch]');
-            if (br) {
-                e.stopPropagation();
-                var sub = br.parentElement.querySelector(':scope > .branch');
-                if (sub) toggleBranch(sub);
-                return;
-            }
             var leaf = e.target.closest('[data-theme-set]');
             if (leaf) {
                 e.stopPropagation();
