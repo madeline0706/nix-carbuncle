@@ -1,6 +1,6 @@
 </main>
 <footer class="site-footer">
-<span><a href="https://github.com/madeline0706/nix-carbuncle/blob/main/@SOURCE@">View page source here</a></span>
+<span><a href="https://github.com/madeline0706/nix-carbuncle/blob/main/@SOURCE@">view page source</a></span>
 <span class="sep" aria-hidden="true">·</span>
 <span>Madelineopolis Enterprizes LLSEE</span>
 <span class="load-time" hidden><span class="sep" aria-hidden="true">·</span><span class="load-time-value"></span></span>
@@ -45,7 +45,7 @@
         if (!val || !box) return;
         var nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
         var ms = (nav && nav.loadEventEnd > 0) ? (nav.loadEventEnd - nav.startTime) : performance.now();
-        val.textContent = 'loaded in ' + Math.round(ms) + ' ms';
+        val.textContent = 'page loaded in ' + Math.round(ms) + ' ms';
         box.hidden = false;
     };
     if (document.readyState === 'complete') show();
