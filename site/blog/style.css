@@ -17,6 +17,9 @@
 
 * { box-sizing: border-box; }
 
+/* mono stack shared by code blocks and the menu */
+:root { --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
 html { font-size: 19px; }
 
 body {
@@ -54,10 +57,10 @@ main { max-width: 40rem; margin: 0 auto; padding: 0 1.4rem 5rem; }
     background: var(--code-bg);
 }
 
-.settings { position: relative; display: inline-flex; align-items: center; margin-left: 1.4rem; }
-.settings-toggle {
+.menu { position: relative; display: inline-flex; align-items: center; margin-left: 1.4rem; }
+.menu-toggle {
     display: inline-flex;
-    padding: 0.25rem 0.35rem;
+    padding: 0.3rem 0.4rem;
     background: none;
     border: none;
     border-radius: 6px;
@@ -65,31 +68,38 @@ main { max-width: 40rem; margin: 0 auto; padding: 0 1.4rem 5rem; }
     color: var(--muted);
     line-height: 0;
 }
-.settings-toggle:hover { color: var(--accent); }
-.settings-toggle svg { width: 4px; height: 16px; display: block; fill: currentColor; }
+.menu-toggle:hover { color: var(--accent); }
+.menu-toggle svg { width: 4px; height: 16px; display: block; fill: currentColor; }
 
-.settings-panel {
+/* dropdown panels: shared look for the menu and its themes flyout */
+.menu-panel, .submenu {
     position: absolute;
-    top: calc(100% + 0.6rem);
-    right: 0;
     z-index: 20;
-    min-width: 10rem;
-    padding: 0.5rem;
+    font-family: var(--mono);
+    min-width: 9rem;
+    padding: 0.4rem;
     background: var(--bg);
     border: 1px solid var(--border);
     border-radius: 10px;
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.28);
 }
-.settings-heading {
-    margin: 0.15rem 0.5rem 0.5rem;
-    font-size: 0.7rem;
+.menu-panel { top: -0.4rem; left: calc(100% + 0.4rem); }
+
+.menu-heading, .menu-group {
+    margin: 0.15rem 0.5rem 0.3rem;
+    font-size: 0.68rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     font-style: normal;
     color: var(--muted);
 }
-.theme-list { list-style: none; margin: 0; padding: 0; }
-.theme-list button {
+.menu-group { margin-top: 0.4rem; }
+.submenu .menu-group:first-child { margin-top: 0.15rem; }
+
+.menu-item { position: relative; }
+
+/* buttons in the menu and flyout share styling */
+.menu-sub-toggle, .submenu button {
     display: flex;
     align-items: center;
     gap: 0.6rem;
@@ -104,18 +114,17 @@ main { max-width: 40rem; margin: 0 auto; padding: 0 1.4rem 5rem; }
     font-size: 0.9rem;
     text-align: left;
 }
-.theme-list button:hover { background: var(--code-bg); color: var(--accent); }
-.theme-list button[aria-pressed="true"] { color: var(--accent); }
-.theme-list button[aria-pressed="true"]::after { content: "\2713"; margin-left: auto; }
-.theme-list .swatch {
-    flex: none;
-    width: 0.95rem;
-    height: 0.95rem;
-    border-radius: 50%;
-    background: var(--sw-bg);
-    box-shadow: inset 0 0 0 3px var(--sw-ac);
-    border: 1px solid var(--border);
-}
+.menu-sub-toggle::after { content: "\203A"; margin-left: auto; color: var(--muted); }
+.menu-sub-toggle:hover, .submenu button:hover { background: var(--code-bg); color: var(--accent); }
+.submenu button[aria-pressed="true"] { color: var(--accent); }
+.submenu button[aria-pressed="true"]::after { content: "\2713"; margin-left: auto; }
+
+/* themes flyout: opens to the left of the menu on hover/focus */
+.submenu { top: -0.4rem; left: 100%; display: none; }
+.menu-item:hover .submenu,
+.menu-item:focus-within .submenu { display: block; }
+.menu-item:hover .menu-sub-toggle,
+.menu-item:focus-within .menu-sub-toggle { background: var(--code-bg); color: var(--accent); }
 
 a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
 
@@ -132,7 +141,7 @@ p { margin: 1.1rem 0; }
 .post-list a { text-decoration: none; color: var(--fg); }
 .post-list a:hover { color: var(--accent); }
 
-pre, code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.85em; }
+pre, code { font-family: var(--mono); font-size: 0.85em; }
 pre { background: var(--code-bg); padding: 1rem 1.2rem; overflow-x: auto; border-radius: 8px; border: 1px solid var(--border); line-height: 1.5; }
 code { background: var(--code-bg); padding: 0.1em 0.4em; border-radius: 4px; }
 pre code { background: none; padding: 0; border: none; }

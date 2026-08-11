@@ -89,12 +89,21 @@ themes="$src/themes"
     ' "$themes"
 } >> "$out/style.css"
 
-# render the picker options once, then bake them into a working header template
-theme_options=$(awk -F'|' '
-    /^[[:space:]]*#/ || /^[[:space:]]*$/ { next }
-    { for (i = 1; i <= NF; i++) gsub(/^[[:space:]]+|[[:space:]]+$/, "", $i)
-      printf "<li><button type=\"button\" data-theme-set=\"%s\"><span class=\"swatch\" style=\"--sw-bg:%s;--sw-ac:%s\"></span>%s</button></li>\n", $1, $3, $6, $1 }
-' "$themes")
+# render the themes flyout, grouped by kind (dark first, then light); the kind
+# column decides the group, so a new row lands in the right place automatically
+theme_buttons() {  # $1 = kind to emit
+    awk -F'|' -v want="$1" '
+        /^[[:space:]]*#/ || /^[[:space:]]*$/ { next }
+        { for (i = 1; i <= NF; i++) gsub(/^[[:space:]]+|[[:space:]]+$/, "", $i)
+          if ($2 != want) next
+          printf "<button type=\"button\" data-theme-set=\"%s\">%s</button>\n", $1, $1 }
+    ' "$themes"
+}
+darks=$(theme_buttons dark)
+lights=$(theme_buttons light)
+theme_options=""
+[ -n "$darks" ]  && theme_options+="<p class=\"menu-group\">dark</p>"$'\n'"$darks"$'\n'
+[ -n "$lights" ] && theme_options+="<p class=\"menu-group\">light</p>"$'\n'"$lights"
 
 hdr=$(mktemp)
 OPTS="$theme_options" awk '
