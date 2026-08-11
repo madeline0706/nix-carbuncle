@@ -9,7 +9,6 @@ mkdir -p "$out" "$out/blog"
 cp "$src/style.css" "$out/style.css"
 [ -d "$src/assets" ] && cp -r "$src/assets" "$out/assets"
 
-hdr="$src/templates/header.html"
 ftr="$src/templates/footer.html"
 
 cm=(cmark-gfm --unsafe -e table -e strikethrough -e autolink -e tasklist)
@@ -69,6 +68,44 @@ body() {
         fm && $0=="---"    { fm=0; next }
         !fm { print }' "$1"
 }
+
+# themes: site/blog/themes is the single source of truth; it drives the css
+# palette blocks, the picker options, and (via the rendered buttons) the set of
+# themes the switcher will accept. add a theme by adding a row there, nothing else.
+themes="$src/themes"
+
+# append one generated palette block per theme to the copied stylesheet
+{
+    echo
+    echo "/* generated from site/blog/themes; edit that file, not this block */"
+    awk -F'|' '
+        /^[[:space:]]*#/ || /^[[:space:]]*$/ { next }
+        { for (i = 1; i <= NF; i++) gsub(/^[[:space:]]+|[[:space:]]+$/, "", $i)
+          pre = (++n == 1) ? ":root,\n" : ""
+          printf "%s[data-theme=\"%s\"] {\n", pre, $1
+          printf "    --bg: %s;\n    --fg: %s;\n    --muted: %s;\n", $3, $4, $5
+          printf "    --accent: %s;\n    --border: %s;\n    --code-bg: %s;\n}\n\n", $6, $7, $8 }
+    ' "$themes"
+} >> "$out/style.css"
+
+# render the picker options once, then bake them into a working header template
+theme_options=$(awk -F'|' '
+    /^[[:space:]]*#/ || /^[[:space:]]*$/ { next }
+    { for (i = 1; i <= NF; i++) gsub(/^[[:space:]]+|[[:space:]]+$/, "", $i)
+      printf "<li><button type=\"button\" data-theme-set=\"%s\"><span class=\"swatch\" style=\"--sw-bg:%s;--sw-ac:%s\"></span>%s</button></li>\n", $1, $3, $6, $1 }
+' "$themes")
+
+hdr=$(mktemp)
+OPTS="$theme_options" awk '
+    function lrepl(str, from, to,   pos, out) {
+        while ((pos = index(str, from)) > 0) {
+            out = out substr(str, 1, pos - 1) to
+            str = substr(str, pos + length(from))
+        }
+        return out str
+    }
+    { print lrepl($0, "@THEME_OPTIONS@", ENVIRON["OPTS"]) }
+' "$src/templates/header.html" > "$hdr"
 
 for f in "$src"/pages/*.md; do
     slug=$(basename "$f" .md)

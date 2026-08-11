@@ -13,14 +13,7 @@
     font-display: swap;
 }
 
-:root {
-    --bg: #1a1a1a;
-    --fg: #d8d4cc;
-    --muted: #8a857b;
-    --accent: #cba6f7;
-    --border: #2f2f2c;
-    --code-bg: #232320;
-}
+/* theme palettes are generated from site/blog/themes and appended at build time */
 
 * { box-sizing: border-box; }
 
@@ -59,6 +52,69 @@ main { max-width: 40rem; margin: 0 auto; padding: 0 1.4rem 5rem; }
     object-fit: cover;
     border: 1px solid var(--border);
     background: var(--code-bg);
+}
+
+.settings { position: relative; display: inline-flex; align-items: center; margin-left: 1.4rem; }
+.settings-toggle {
+    display: inline-flex;
+    padding: 0.25rem 0.35rem;
+    background: none;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--muted);
+    line-height: 0;
+}
+.settings-toggle:hover { color: var(--accent); }
+.settings-toggle svg { width: 4px; height: 16px; display: block; fill: currentColor; }
+
+.settings-panel {
+    position: absolute;
+    top: calc(100% + 0.6rem);
+    right: 0;
+    z-index: 20;
+    min-width: 10rem;
+    padding: 0.5rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.28);
+}
+.settings-heading {
+    margin: 0.15rem 0.5rem 0.5rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-style: normal;
+    color: var(--muted);
+}
+.theme-list { list-style: none; margin: 0; padding: 0; }
+.theme-list button {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    padding: 0.4rem 0.5rem;
+    background: none;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--fg);
+    font: inherit;
+    font-size: 0.9rem;
+    text-align: left;
+}
+.theme-list button:hover { background: var(--code-bg); color: var(--accent); }
+.theme-list button[aria-pressed="true"] { color: var(--accent); }
+.theme-list button[aria-pressed="true"]::after { content: "\2713"; margin-left: auto; }
+.theme-list .swatch {
+    flex: none;
+    width: 0.95rem;
+    height: 0.95rem;
+    border-radius: 50%;
+    background: var(--sw-bg);
+    box-shadow: inset 0 0 0 3px var(--sw-ac);
+    border: 1px solid var(--border);
 }
 
 a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }

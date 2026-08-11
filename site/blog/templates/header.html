@@ -14,6 +14,8 @@
 <link rel="icon" href="/assets/favicon.svg">
 <link rel="alternate" type="application/rss+xml" title="madeline's blog" href="/feed.xml">
 <link rel="stylesheet" href="/style.css">
+<!-- apply saved theme before first paint so there's no flash of the default -->
+<script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 </head>
 <body>
 <header class="site-header">
@@ -22,6 +24,17 @@
 <a href="/">home</a>
 <a href="/blog/">blog</a>
 <a href="/contact/">contact</a>
+<div class="settings">
+<button class="settings-toggle" type="button" aria-label="Settings" aria-haspopup="true" aria-expanded="false">
+<svg viewBox="0 0 4 16" aria-hidden="true"><circle cx="2" cy="2.4" r="1.7"/><circle cx="2" cy="8" r="1.7"/><circle cx="2" cy="13.6" r="1.7"/></svg>
+</button>
+<div class="settings-panel" hidden>
+<p class="settings-heading">theme</p>
+<ul class="theme-list">
+@THEME_OPTIONS@
+</ul>
+</div>
+</div>
 <img class="avatar" src="/assets/profile.png" alt="madeline">
 </nav>
 </header>

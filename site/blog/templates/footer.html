@@ -3,6 +3,54 @@
 <span><a href="https://github.com/madeline0706/nix-carbuncle/blob/main/@SOURCE@">View page source here</a></span>
 <span class="sep" aria-hidden="true">·</span>
 <span>Madelineopolis Enterprizes LLSEE</span>
+<span class="load-time" hidden><span class="sep" aria-hidden="true">·</span><span class="load-time-value"></span></span>
 </footer>
+<script>
+(function () {
+    var doc = document.documentElement;
+
+    // theme switcher: persist choice in localStorage, mark the active one
+    var toggle = document.querySelector('.settings-toggle');
+    var panel = document.querySelector('.settings-panel');
+    var wrap = document.querySelector('.settings');
+    if (toggle && panel && wrap) {
+        var mark = function () {
+            var cur = doc.getAttribute('data-theme') || 'spellbound';
+            panel.querySelectorAll('[data-theme-set]').forEach(function (b) {
+                b.setAttribute('aria-pressed', b.getAttribute('data-theme-set') === cur ? 'true' : 'false');
+            });
+        };
+        var open = function (v) {
+            panel.hidden = !v;
+            toggle.setAttribute('aria-expanded', v ? 'true' : 'false');
+        };
+        toggle.addEventListener('click', function (e) { e.stopPropagation(); open(panel.hidden); });
+        panel.addEventListener('click', function (e) {
+            var b = e.target.closest('[data-theme-set]');
+            if (!b) return;
+            var name = b.getAttribute('data-theme-set');
+            doc.setAttribute('data-theme', name);
+            try { localStorage.setItem('theme', name); } catch (e) {}
+            mark();
+        });
+        document.addEventListener('click', function (e) { if (!wrap.contains(e.target)) open(false); });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') open(false); });
+        mark();
+    }
+
+    // footer readout: whole-page load time from the Navigation Timing API
+    var show = function () {
+        var val = document.querySelector('.load-time-value');
+        var box = document.querySelector('.load-time');
+        if (!val || !box) return;
+        var nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+        var ms = (nav && nav.loadEventEnd > 0) ? (nav.loadEventEnd - nav.startTime) : performance.now();
+        val.textContent = 'loaded in ' + Math.round(ms) + ' ms';
+        box.hidden = false;
+    };
+    if (document.readyState === 'complete') show();
+    else window.addEventListener('load', show);
+})();
+</script>
 </body>
 </html>
