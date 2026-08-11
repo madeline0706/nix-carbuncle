@@ -6,7 +6,8 @@ src="$1"
 out="$2"
 
 mkdir -p "$out" "$out/blog"
-cp "$src/style.css" "$out/style.css"
+# cat, not cp: store sources are read-only (0444) and we append generated themes below
+cat "$src/style.css" > "$out/style.css"
 [ -d "$src/assets" ] && cp -r "$src/assets" "$out/assets"
 
 ftr="$src/templates/footer.html"
