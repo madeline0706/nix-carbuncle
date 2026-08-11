@@ -6,4 +6,14 @@ SSL and public access is configured on a VPS, traffic is proxied by Caddy. I wou
 
 ![Fastfetch](https://images.spellbound.sh/08-11-26-f07c-781c.png "Fastfetch")
 
+## Credits
+Inspiration for this blog were from https://xeiaso.net/ & https://fzakaria.com/
+Fonts used in this blog are:
+- [Lora](https://fonts.google.com/specimen/Lora): Typeset font
+- [F77](https://fontstruct.com/fontstructions/show/1494646/f77-terminal): Terminal font
+
+
+
 Add the RSS feed via ``https://spellbound.sh/feed.xml``
+
+

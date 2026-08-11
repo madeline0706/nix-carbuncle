@@ -12,6 +12,7 @@ let
       mkdir -p $out/fonts
       cp ${cfg.loraFont}/share/fonts/truetype/'Lora[wght].ttf' $out/fonts/Lora.ttf              # serve Lora under /fonts
       cp ${cfg.loraFont}/share/fonts/truetype/'Lora-Italic[wght].ttf' $out/fonts/Lora-Italic.ttf # don't forget about italic
+      cp ${./fonts/OFL.txt} $out/fonts/OFL.txt                                                   # SIL OFL travels with the served font (nixpkgs' lora ships no license)
     '';
 
   # assemble the final served tree: blog at the root, static terminal app at /terminal
