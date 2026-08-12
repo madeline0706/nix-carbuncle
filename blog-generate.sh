@@ -202,3 +202,12 @@ build_date=$(rfc822 "$newest"); build_date=${build_date:-$(rfc822 "1970-01-01")}
     echo '</channel>'
     echo '</rss>'
 } > "$out/feed.xml"
+
+# ---- robots.txt (allow every crawler; advertise the feed as a sitemap) ----
+# no sitemap.xml is generated, but Google and Bing accept an RSS 2.0 feed as one.
+{
+    echo 'User-agent: *'
+    echo 'Allow: /'
+    echo ''
+    printf 'Sitemap: %s/feed.xml\n' "$baseurl"
+} > "$out/robots.txt"
