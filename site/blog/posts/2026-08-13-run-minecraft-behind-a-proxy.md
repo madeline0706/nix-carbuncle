@@ -15,7 +15,7 @@ Questions to ask yourself:
 Before digging any deeper, here are easier, free, and potentially more ideal options, depending on your usecase.
 
 [Playit](https://playit.gg/) is a free* service that allows one to easily setup a tunnel to allow people to join. Contains premium features, may not have ideal latency. Ideal for a simple, free* setup for a dedicated server.
-[e4mc](https://modrinth.com/mod/e4mc/versions) is an open source Fabric/Forge/Neoforge/Quilt mod that allows one to open their LAN game to allow people to join. Ideal for non-dedicated servers, or temporarily play sessions.
+[e4mc](https://modrinth.com/mod/e4mc/versions) is an open source Fabric/Forge/Neoforge/Quilt mod that allows one to open their LAN game to allow people to join. Ideal for non-dedicated servers, or temporary play sessions.
 [Tailscale](https://tailscale.com/) is a free* application to create VPN connections between machines. Very generous free tier. All players will need to install this in order to connect to the server. 
 
 That being said, there are many ways to accomplish the goal of allowing people to join a server, all three of the aforementioned methods are entirely valid, but from my experience, using [FRP](https://github.com/fatedier/frp) has been the most stable, and flexible option.
@@ -25,7 +25,7 @@ That being said, there are many ways to accomplish the goal of allowing people t
 
 - Basic understanding of networking
 - Basic understanding of Linux
-- A publically accessible server. Such as a VPS, AWS instance, Oracle Cloud instance, etc.
+- A publicly accessible server. Such as a VPS, AWS instance, Oracle Cloud instance, etc.
 - A Minecraft server running on another machine, self-hosted or otherwise.
 
 This guide will only touch on the actual meat and potatoes of setting up FRP itself. It will not guide you on how to set up the server itself, security, etc. Here be dragons.
@@ -34,7 +34,7 @@ This guide will only touch on the actual meat and potatoes of setting up FRP its
 
 This is not sponsored, this is just me speaking from experience. 
 
-Using Oracle's OCI, one can use an 'always-free' 1GB RAM instance. It is by no means powerful, but for what we need, it is just fine. A credit card is required to make an account, and its... Oracle. Free though!
+Using Oracle's OCI, one can use an 'always-free' 1GB RAM instance. It is by no means powerful, but for what we need, it is just fine. A credit card is required to make an account, and it's... Oracle. Free though!
 Using a cheap VPS provider, be that RackNerd's yearly deals(my personal solution), Vultr (Make sure it has a public IP) or a provider such as Lagless Xeon VPS ($3-4/mo).
 
 Make sure to use a server that is geographically close to you, to improve the overall ping. You wouldn't want to use a EU hosted machine to proxy your server in the US. Aim for the same state/side of the country if possible.
@@ -43,10 +43,10 @@ Once you have acquired a public server, have secured it, and have root access to
 
 ## Softwares needed
 
-At minimum, just FRP is required. FRPC on the machine that has the Minecraft server, and FRPS on the publically accessible machine.
+At minimum, just FRP is required. FRPC on the machine that has the Minecraft server, and FRPS on the publicly accessible machine.
 
 To ease the process for the installation, maintenance, and general quality of life, we will be leveraging [Tailscale]() & [Docker]() for this guide.
-Tailscale simplifies the networking. Simply install Tailscale onto both machines, use the same account and put them on the same Tailnet. Each machine will have a Tailscale IP ``100.x.x.x`` that can be used in place of the real IP. This bypasses the need to port forward the self-hosted Minecraft server so that the publically accessible server can reach it. This should help in situations for people cucked by CG-NAT.
+Tailscale simplifies the networking. Simply install Tailscale onto both machines, use the same account and put them on the same Tailnet. Each machine will have a Tailscale IP ``100.x.x.x`` that can be used in place of the real IP. This bypasses the need to port forward the self-hosted Minecraft server so that the publicly accessible server can reach it. This should help in situations for people cucked by CG-NAT.
 
 Docker is entirely optional here. But, it makes setting up the server a *breeze*. Just populate a single file with gabbledeegook and you're 90% of the way there. No need to use the binary with something like tmux or byobu, no need to set up a service either. Best part too, its portable.
 
@@ -59,7 +59,7 @@ To reiterate:
 
 ## Public server setup prerequisites
 
-We will start with the publically accessible server. To begin, install Docker and Tailscale. Run the following. (Sanity check the following official documentation, you don't have to trust me) 
+We will start with the publicly accessible server. To begin, install Docker and Tailscale. Run the following. (Sanity check the following official documentation, you don't have to trust me) :%s/publically/publicly/g
 
 [Tailscale Install](https://tailscale.com/download) // [Docker Install](https://get.docker.com/)
 
@@ -88,7 +88,7 @@ sudo sh get-docker.sh
 
 ## Both servers at the same time, setup Tailscale
 
-Now that both machines have the prerequisite software, it is time to install authenticate with Tailscale. First, make sure you have an account already, or are ready to make a new one when prompted.
+Now that both machines have the prerequisite software, it is time to install and authenticate with Tailscale. First, make sure you have an account already, or are ready to make a new one when prompted.
 
 Run:
 
@@ -214,7 +214,7 @@ services:
       - '/frp/frpc.toml'
 ```
 
-Same deal. It will create a config/ folder in the same folder as the compose. Populate the ``frps.toml`` inside of config/
+Same deal. It will create a config/ folder in the same folder as the compose. Populate the ``frpc.toml`` inside of config/
 
 ```
 cd config/
