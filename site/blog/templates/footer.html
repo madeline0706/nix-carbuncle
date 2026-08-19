@@ -9,6 +9,23 @@
 (function () {
     var doc = document.documentElement;
 
+    // the corner ✕ collapses the reader and slides into the terminal app. it's a
+    // real link, so middle-click / ⌘-click / no-JS still open /terminal/ normally.
+    var termX = document.querySelector('.term-x');
+    if (termX) {
+        var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        termX.addEventListener('click', function (e) {
+            if (e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+            e.preventDefault();
+            // hand the current (themed) bg colour to /terminal/ so its fade can start there
+            try { sessionStorage.setItem('enterBg', getComputedStyle(document.body).backgroundColor); } catch (err) {}
+            var go = function () { window.location.href = termX.getAttribute('href'); };
+            if (reduce || doc.classList.contains('to-terminal')) { go(); return; }
+            doc.classList.add('to-terminal');   // drives the collapse in style.css
+            setTimeout(go, 460);                 // navigate once the collapse has played
+        });
+    }
+
     // radial spell-fan: each branch fans its nodes out along an arc set by its
     // data-angle/spread/radius; picking a theme persists it and marks it active
     var fanroot = document.querySelector('.fanroot');

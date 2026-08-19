@@ -3,24 +3,15 @@
 let
   cfg = config.services.spellboundSite;
 
-  # build derivation, render the blog from markdown, and bundle the fonts
-  blog = pkgs.runCommand "spellbound-blog"
-    # tools blog-generate.sh needs
-    { nativeBuildInputs = with pkgs; [ cmark-gfm coreutils gnused gawk bash ]; }
-    ''
-      bash ${./blog-generate.sh} ${cfg.blogSrc} $out   # generate HTML into $out from the blog source
-      mkdir -p $out/fonts
-      cp ${cfg.loraFont}/share/fonts/truetype/'Lora[wght].ttf' $out/fonts/Lora.ttf              # serve Lora under /fonts
-      cp ${cfg.loraFont}/share/fonts/truetype/'Lora-Italic[wght].ttf' $out/fonts/Lora-Italic.ttf # don't forget about italic
-      cp ${./fonts/OFL.txt} $out/fonts/OFL.txt                                                   # SIL OFL travels with the served font (nixpkgs' lora ships no license)
-    '';
-
-  # assemble the final served tree: blog at the root, static terminal app at /terminal
-  site = pkgs.runCommand "spellbound-site" { } ''
-    mkdir -p $out
-    cp -r ${blog}/. $out/                  # generated blog becomes the site root
-    cp -r ${cfg.terminalSrc} $out/terminal # parked terminal app mounted at /terminal
-  '';
+  # the served tree (blog at root + terminal at /terminal), built by the shared
+  # expression so dev builds on shiva match what deploys to carbuncle exactly
+  site = import ./site-pkg.nix {
+    inherit pkgs;
+    blogSrc = cfg.blogSrc;
+    terminalSrc = cfg.terminalSrc;
+    loraFont = cfg.loraFont;
+    hackFont = cfg.hackFont;
+  };
 in
 {
   # custom site module API: bibs n' knobs for the site, with sensible? defaults
@@ -37,6 +28,12 @@ in
       type = lib.types.package;
       default = pkgs.lora;
       description = "The Lora font package, served under /fonts.";
+    };
+
+    hackFont = lib.mkOption {          # monospace for code blocks + terminal
+      type = lib.types.package;
+      default = pkgs.hack-font;
+      description = "The Hack font package, served under /fonts (code + terminal).";
     };
 
     terminalSrc = lib.mkOption {       # static terminal app served at /terminal

@@ -12,13 +12,28 @@
     font-style: italic;
     font-display: swap;
 }
+/* Hack (see /fonts/Hack-LICENSE.md) — monospace for code blocks; also used by the terminal */
+@font-face {
+    font-family: 'Hack';
+    src: url('/fonts/Hack-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Hack';
+    src: url('/fonts/Hack-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
 
 /* theme palettes are generated from site/blog/themes and appended at build time */
 
 * { box-sizing: border-box; }
 
 /* mono stack for code blocks */
-:root { --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+:root { --mono: 'Hack', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 
 html { font-size: 19px; }
 
@@ -57,6 +72,39 @@ main { max-width: 40rem; margin: 0 auto; padding: 0 1.4rem 5rem; }
     background: var(--code-bg);
 }
 
+/* ---- corner ✕: collapse the reader and slide into /terminal/ ---- */
+.term-x {
+    position: fixed;
+    top: 2.25rem;   /* line up with the header's first row (the theme-menu dots) */
+    left: 1rem;
+    z-index: 80;
+    display: inline-flex;
+    padding: 0.35rem;
+    border-radius: 6px;
+    color: var(--muted);
+    line-height: 0;
+    transition: color 0.15s, transform 0.2s, opacity 0.4s;
+}
+.term-x:hover { color: var(--accent); }
+.term-x svg { width: 18px; height: 18px; display: block; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+
+/* leave animation: the reader collapses up + fades, keeping the current theme
+   background so /terminal/ can pick up that exact colour and fade it to near-black */
+.site-header, main, .site-footer {
+    transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+}
+.to-terminal .site-header,
+.to-terminal main,
+.to-terminal .site-footer {
+    transform: translateY(-1.6rem) scale(0.985);
+    opacity: 0;
+}
+.to-terminal .term-x { opacity: 0; transform: scale(0.6); }
+
+@media (prefers-reduced-motion: reduce) {
+    .site-header, main, .site-footer, .term-x { transition: none; }
+}
+
 /* ---- radial spell-fan menu (nested; works at any depth) ---- */
 .fanroot { position: relative; display: inline-flex; margin-left: 1.4rem; z-index: 50; }
 .kebab {
@@ -72,30 +120,6 @@ main { max-width: 40rem; margin: 0 auto; padding: 0 1.4rem 5rem; }
 }
 .kebab:hover { color: var(--accent); }
 .kebab svg { width: 4px; height: 16px; display: block; fill: currentColor; }
-
-/* hover/focus tooltip on the three dots */
-.kebab::after {
-    content: attr(data-tip);
-    position: absolute;
-    top: calc(100% + 0.45rem);
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 60;
-    white-space: nowrap;
-    padding: 0.15rem 0.55rem;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    line-height: 1.4;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    color: var(--fg);
-    box-shadow: 0 5px 16px rgba(0, 0, 0, 0.28);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.15s;
-}
-.kebab:hover::after,
-.kebab:focus-visible::after { opacity: 1; }
 
 /* a branch is a zero-size anchor at its parent; its nodes fan out via JS-set --x/--y */
 .branch { position: absolute; top: 50%; left: 50%; width: 0; height: 0; list-style: none; margin: 0; padding: 0; }

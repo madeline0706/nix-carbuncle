@@ -1,3 +1,4 @@
 *.key
 result
 CLAUDE.md
+.dev-site*

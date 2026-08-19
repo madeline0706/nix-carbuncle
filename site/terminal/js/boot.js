@@ -1,7 +1,6 @@
-import { loadJson, loadText } from './util.js';
+import { loadJson } from './util.js';
 import { Splash } from './splash.js';
 import { Terminal } from './terminal.js';
-import { Dungeon } from './dungeon.js';
 import './commands/index.js';
 
 const DEFAULTS = {
@@ -17,10 +16,8 @@ async function main() {
     await splash.show(config.splashDurationMs);
     await splash.hide();
 
+    document.documentElement.classList.add('booted');   // fade the bg to near-black
     new Terminal(config);
-
-    const room = await loadText('content/room.txt');
-    if (room) new Dungeon('dungeon', room);
 }
 
 window.addEventListener('DOMContentLoaded', () => {

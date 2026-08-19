@@ -5,20 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>spellbound:~</title>
     <link rel="stylesheet" href="css/terminal.css">
+    <!-- if we arrived from the themed blog, start at that exact bg (splash + body)
+         so the fade to near-black is continuous; one-shot, cleared after reading -->
+    <script>try{var b=sessionStorage.getItem('enterBg');if(b){document.documentElement.style.setProperty('--bg',b);sessionStorage.removeItem('enterBg');}}catch(e){}</script>
 </head>
 <body>
 
 <div id="splash">
     <pre id="banner"></pre>
-    <div id="splash-sub">initializing...</div>
 </div>
 
 <div id="app">
     <div id="terminal"></div>
-    <aside id="dungeon-pane">
-        <div id="dungeon-label">// room</div>
-        <pre id="dungeon"></pre>
-    </aside>
 </div>
 
 <script type="module" src="js/boot.js"></script>

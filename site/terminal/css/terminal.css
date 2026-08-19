@@ -1,12 +1,24 @@
+/* Hack (see /fonts/Hack-LICENSE.md) — served at the site root, shared with the blog */
 @font-face {
-    font-family: 'F77';
-    src: url('../F77.ttf') format('truetype');
+    font-family: 'Hack';
+    src: url('/fonts/Hack-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Hack';
+    src: url('/fonts/Hack-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
     font-display: swap;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
+    /* same monospace stack the blog uses for code blocks */
+    --mono: 'Hack', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     --lavender: #cba6f7;
     --lilac: #b4befe;
     --mint: #a6e3a1;
@@ -16,17 +28,22 @@
     --gray: #a6adc8;
     --red: #f38ba8;
     --bg: #1a1a1a;
+    --black: #0a0a0a;   /* near-black the terminal settles into after boot */
 }
 
 html, body {
     height: 100%;
     background: var(--bg);
     color: var(--white);
-    font-family: 'F77', monospace;
-    font-size: 12px;
+    font-family: var(--mono);
+    font-size: 19px;   /* match the blog's post body text */
     line-height: 1.2;
     overflow: hidden;
+    transition: background-color 0.6s ease;
 }
+
+/* once the splash has finished, the page fades from --bg down to near-black */
+.booted, .booted body { background: var(--black); }
 
 #app {
     height: 100vh;
@@ -46,37 +63,6 @@ html, body {
     white-space: pre-wrap;
 }
 #terminal::-webkit-scrollbar { width: 0; }
-
-#dungeon-pane {
-    flex: 0 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border-left: 1px solid var(--gray);
-    padding-left: 20px;
-}
-#dungeon-label {
-    color: var(--gray);
-    margin-bottom: 8px;
-    align-self: flex-start;
-}
-#dungeon {
-    color: var(--gray);
-    white-space: pre;
-    line-height: 1.1;
-    user-select: none;
-}
-.dungeon-player { color: var(--mint); }
-
-@media (max-width: 700px) {
-    #app { flex-direction: column; }
-    #dungeon-pane {
-        border-left: none;
-        border-top: 1px solid var(--gray);
-        padding-left: 0;
-        padding-top: 12px;
-    }
-}
 
 .input-line { display: flex; align-items: center; margin-top: 0.3em; }
 .prompt-sign { color: var(--lavender); user-select: none; margin-right: 0.5em; white-space: nowrap; }
@@ -98,7 +84,7 @@ html, body {
 #splash.fade-out { opacity: 0; pointer-events: none; }
 
 #banner {
-    font-family: 'F77', monospace;
+    font-family: var(--mono);
     font-size: 12px;
     line-height: 1.1;
     white-space: pre;
@@ -119,20 +105,12 @@ html, body {
     100% { background-position: -50% 0; }
 }
 
-#splash-sub {
-    margin-top: 24px;
-    color: var(--gray);
-    font-size: 12px;
-    animation: blink 1s step-end infinite;
-}
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-
 .command-input {
     background: none;
     border: none;
     color: var(--white);
-    font-family: 'F77', monospace;
-    font-size: 12px;
+    font-family: var(--mono);
+    font-size: inherit;   /* follow the body size (matches the blog post text) */
     outline: none;
     caret-color: var(--lavender);
     width: 100%;

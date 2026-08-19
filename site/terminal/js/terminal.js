@@ -12,12 +12,15 @@ export class Terminal {
         return this.promptTemplate.replace('{user}', this.username);
     }
 
-    addInputLine() {
+    // `label` overrides the usual shell prompt-sign — used by ask() so an
+    // interactive prompt (e.g. `login:`) reads like the real thing.
+    addInputLine(label) {
         this.el.querySelectorAll('.live-input').forEach((e) => e.remove());
         const line = document.createElement('div');
         line.className = 'input-line live-input';
+        const sign = label != null ? label : this.getPromptString();
         line.innerHTML =
-            `<span class="prompt-sign">${this.getPromptString()}</span>` +
+            `<span class="prompt-sign">${sign}</span>` +
             `<input type="text" class="command-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">`;
         this.el.appendChild(line);
         this.input = line.querySelector('input');
@@ -27,24 +30,41 @@ export class Terminal {
         this.scrollBottom();
     }
 
+    // freeze the current live input into static text so it scrolls into history
+    freezeInput(text) {
+        const live = this.el.querySelector('.live-input');
+        if (!live) return;
+        live.classList.remove('live-input');
+        const span = document.createElement('span');
+        span.className = 'static-cmd';
+        span.textContent = ' ' + text;
+        live.querySelector('input').replaceWith(span);
+    }
+
+    // read one line from the user. returns a Promise a command can await; while
+    // pending, the next Enter feeds it instead of running as a command.
+    ask(label = '') {
+        return new Promise((resolve) => {
+            this.pending = resolve;
+            this.addInputLine(label);
+        });
+    }
+
     onKey(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            this.run(this.input.value.trim());
+        if (e.key !== 'Enter') return;
+        e.preventDefault();
+        const value = this.input.value.trim();
+        this.freezeInput(value);
+        if (this.pending) {
+            const resolve = this.pending;
+            this.pending = null;
+            resolve(value);
+            return;
         }
+        this.run(value);
     }
 
     run(cmd) {
-        const live = this.el.querySelector('.live-input');
-        if (live) {
-            live.classList.remove('live-input');
-            const inp = live.querySelector('input');
-            const span = document.createElement('span');
-            span.className = 'static-cmd';
-            span.textContent = ' ' + cmd;
-            inp.replaceWith(span);
-        }
-
         if (!cmd) { this.addInputLine(); return; }
 
         const [base, ...rest] = cmd.split(' ');
